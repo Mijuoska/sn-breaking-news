@@ -1,0 +1,23 @@
+<div class="panel panel-info b">
+  
+  <select type="text" class="form-control" id="news-source" ng-change="c.getNewsSource()" ng-model="c.data.news_source">
+   <option ng-repeat="s in data.sources" value="{{:: s.id }}">{{:: s.name }}</option> 
+  </select>
+  <div class="panel-heading">
+    <h4 class="panel-title">Latest News from {{ c.data.articles[0].source.name }}</h4>
+  </div>
+
+  <div class="panel-body">
+    <div ng-repeat="a in data.articles" style="margin-bottom: 1em;">
+      <a target="_blank" href="{{::a.url}}">{{::a.title}}</a>
+      <div>
+        <span title="Published">
+          <glyph sn-char="calendar" />
+          <sn-time-ago timestamp="a.publishedAt"/>
+        </span>
+      </div>
+      
+    </div>
+   
+  </div>
+</div>

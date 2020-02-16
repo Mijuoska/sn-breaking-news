@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8"?><unload unload_date="2020-02-16 08:44:16">
+<sys_remote_update_set action="INSERT_OR_UPDATE">
+<application display_value="Global">global</application>
+<application_name>Global</application_name>
+<application_scope>global</application_scope>
+<application_version/>
+<collisions/>
+<commit_date/>
+<deleted/>
+<description/>
+<inserted/>
+<name>News Widget</name>
+<origin_sys_id/>
+<parent display_value=""/>
+<release_date/>
+<remote_base_update_set display_value=""/>
+<remote_parent_id/>
+<remote_sys_id>ab15063fdb1640108cab178039961997</remote_sys_id>
+<state>loaded</state>
+<summary/>
+<sys_class_name>sys_remote_update_set</sys_class_name>
+<sys_created_by>admin</sys_created_by>
+<sys_created_on>2020-02-16 08:44:16</sys_created_on>
+<sys_id>64f29ab8db030010f79c14613996199d</sys_id>
+<sys_mod_count>0</sys_mod_count>
+<sys_updated_by>admin</sys_updated_by>
+<sys_updated_on>2020-02-16 08:44:16</sys_updated_on>
+<update_set display_value=""/>
+<update_source display_value=""/>
+<updated/>
+</sys_remote_update_set>
+<sys_update_xml action="INSERT_OR_UPDATE">
+<action>INSERT_OR_UPDATE</action>
+<application display_value="Global">global</application>
+<category>customer</category>
+<comments/>
+<name>sys_script_include_2679cceadb87b340335bd6aa489619fd</name>
+<payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sys_script_include"&gt;&lt;sys_script_include action="INSERT_OR_UPDATE"&gt;&lt;access&gt;package_private&lt;/access&gt;&lt;active&gt;true&lt;/active&gt;&lt;api_name&gt;global.WeatherUtils&lt;/api_name&gt;&lt;caller_access/&gt;&lt;client_callable&gt;false&lt;/client_callable&gt;&lt;description/&gt;&lt;name&gt;WeatherUtils&lt;/name&gt;&lt;script&gt;&lt;![CDATA[var WeatherUtils = Class.create();
+WeatherUtils.prototype = {
+    initialize: function() {
+
+    },
+
+    getWeather: function(location, apitype, hours) {
+        if (location) {
+            try {
+                var r = new sn_ws.RESTMessageV2(apitype, 'Default GET'); // Possible apitypes: 'Current Weather API', 'Weather Forecast API'
+
+                r.setQueryParameter('key', '32a96b4e771e46d1a32790dad7016f18');
+                r.setQueryParameter('city', location);
+
+                if (hours) {
+                    r.setQueryParameter(hours);
+                }
+
+                var response = r.execute();
+                var responseBody = response.getBody();
+                var httpStatus = response.getStatusCode();
+
+                var obj = JSON.parse(responseBody);
+                if (!obj) {
+                    return "No weather data could be retrieved for your location";
+                }
+
+                var weatherObj = {};
+                if (apitype == "Current Weather API") {
+                    weatherObj.location = obj.data[0].city_name;
+                    weatherObj.ob_time = obj.data[0].ob_time;
+                } else {
+                    weatherObj.location = obj.city_name;
+                    weatherObj.ob_time = obj.data[0].timestamp_utc;
+                }
+                weatherObj.desc = obj.data[0].weather.description;
+                weatherObj.windspd = Math.floor(obj.data[0].wind_spd * 10) / 10;
+                weatherObj.temp = obj.data[0].temp;
+                weatherObj.precip = Math.floor(obj.data[0].precip * 1000) / 1000;
+                weatherObj.icon = obj.data[0].weather.icon;
+
+                if (apitype == "Weather Forecast API") {
+                    weatherObj.hours = hours + " hours";
+                }
+
+                gs.log(weatherObj.location + " has " + weatherObj.desc);
+                return weatherObj;
+
+
+            } catch (ex) {
+                var message = ex.message;
+                gs.log(message);
+            }
+        } else {
+            return "Weather information could not be retrieved. No location defined for currently logged in user.";
+        }
+    },
+
+
+    getUserLocation: function() {
+        var user = gs.getUser();
+        var location_id = user.getLocation();
+        var lc = new GlideRecord('cmn_location');
+        lc.addQuery('sys_id', location_id);
+        lc.query();
+        if (lc.next()) {
+            return lc.city;
+        }
+    },
+
+    getUserLocationByIP: function() {
+        var IP = gs.getSession().getClientIP().toString();
+        try {
+            var r = new sn_ws.RESTMessageV2();
+            r.setEndpoint('http://ip-api.com/json/' + IP);
+            r.setQueryParameter('fields', 'city');
+            r.setHttpMethod('get');
+            var response = r.execute();
+            var responseBody = response.getBody();
+            var httpStatus = response.getStatusCode();
+
+            gs.log(responseBody);
+            gs.log(httpStatus);
+            var json = JSON.parse(responseBody);
+            var city = json.city;
+
+            return city;
+        } catch (ex) {
+            var message = ex.message;
+        }
+
+
+    },
+
+    type: 'WeatherUtils'
+};]]&gt;&lt;/script&gt;&lt;sys_class_name&gt;sys_script_include&lt;/sys_class_name&gt;&lt;sys_created_by&gt;admin&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2019-08-06 13:06:20&lt;/sys_created_on&gt;&lt;sys_id&gt;2679cceadb87b340335bd6aa489619fd&lt;/sys_id&gt;&lt;sys_mod_count&gt;58&lt;/sys_mod_count&gt;&lt;sys_name&gt;WeatherUtils&lt;/sys_name&gt;&lt;sys_package display_value="Global" source="global"&gt;global&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_scope display_value="Global"&gt;global&lt;/sys_scope&gt;&lt;sys_update_name&gt;sys_script_include_2679cceadb87b340335bd6aa489619fd&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;admin&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2020-01-19 08:40:30&lt;/sys_updated_on&gt;&lt;/sys_script_include&gt;&lt;/record_update&gt;</payload>
+<payload_hash>1922217464</payload_hash>
+<remote_update_set display_value="News Widget">64f29ab8db030010f79c14613996199d</remote_update_set>
+<replace_on_upgrade>false</replace_on_upgrade>
+<sys_created_by>admin</sys_created_by>
+<sys_created_on>2020-02-16 08:44:16</sys_created_on>
+<sys_id>68f29ab8db030010f79c14613996199e</sys_id>
+<sys_mod_count>0</sys_mod_count>
+<sys_recorded_at>16fbcf5e9510000001</sys_recorded_at>
+<sys_updated_by>admin</sys_updated_by>
+<sys_updated_on>2020-02-16 08:44:16</sys_updated_on>
+<table/>
+<target_name>WeatherUtils</target_name>
+<type>Script Include</type>
+<update_domain>global</update_domain>
+<update_guid>44950eb7ec56401016d1586fb6f55b0e</update_guid>
+<update_guid_history>44950eb7ec56401016d1586fb6f55b0e:1922217464,6b3ba19232bb730052610319e8e08335:1329454515,9b1c8ef9e3a3330070447ce45914be9d:127659191,d9860e395ca333008af703d848240b10:-1651386664,a000626d5497f7007b7abb165fdce498:-1626498245,fcdf966d3d97f7006231f9f998e2434c:1882425401,93a0d6d1521fb700702b6f1bb69bce07:-484612987,d350da91611fb70040054509acfb4705:1862608037,f58d0edd8ddbb700038ea0bc07b0e846:533118918,216d4611451fb7007c1bd6dff3ca3fbc:-736351348,7cec82dd73dbb700048b4e12d829248c:533118918,a5bc86dd6edbb70022aed9accbecd13e:-926456650,073c02ddacdbb70037a37f9e72595b5d:-1159308962,095a025da0dbb70092d0f2298470df2a:1605863614,a1a9025db6dbb70065da6f187ab5fe26:-2021906311,8dc8865d68dbb700bdcda08f4cc3f1ef:-963637355,2c57f544bc5bf300f95b80630bfaa064:1786902748,7ff6fd80c85bf300a51de2747881a869:-1186209756,04d6f904485bf3001938ae9a7d4c980a:-2096042332,15463900365bf3003598ad443c256cfe:-481323149,6aa5fd80275bf30008c8f6920109b35b:36906731,c01be14cf61bf300e377a104e35a9123:105618872,b17aa54ca51bf30017e403e8cd7b3949:-1980578719,5f0a650c811bf3003c1a4f31efb2b0af:1541736957,f504118847d7f3003be134e0cab69e98:1398141979,08ea0180ecd7f3003e102f88be49baa8:1042781234,efca8980c0d7f30026005219b3b376a4:177091737,69e9cd006cd7f30065d4510953bedb45:921381870,06374d4ce697f300c8db150bf015d46e:134988102,e356894ca297f3001db3430f80948b10:122182592,bc34494c9597f30017386e9fad7c75e1:-473114867,d4e2454c1697f3004b0fd2543bd0b009:-1214720239,b96dfa031d0773001e4411b8f53f0fdb:1742920290,20fcb603010773008d3dd04d4a22f6d9:1730317028,688cbecf4dc37300f885ad88d62f48bc:1832914511,95bbb6cf7bc37300fc2e8cca6d8a5f48:496148187,de7bbecff9c37300d5ebc141f8eaa6d2:231742602,d72bfacf62c37300c7d1f178aaf921c2:194952102,75b2f6cf3943374017801529d6d55057:-908662057,de31f68f0a433740d8ef9881efc9f426:-256023855,30e0368f924337409902825c309cd8f6:1725664528,4880b60f54433740bc06fb7e426e6460:-502520805,1f40be4fee433740444959e8d211204d:-896593982,0fef660fc24337407ba0306891047f59:1658892454,24fd660f9a433740b176ac4eddb43153:-1803604968,ef7deacb52433740769da74e869a6499:1640885647,e2fcae8b59433740d6c2d775e085834f:348134453,cc5418a2afc7b3400259ab4e9e9b3d28:2046282080,05d2d0a26dc7b34046602579fed475c5:790692150,9a9254a2abc7b3409e219d8bce384253:-975145339,574018222cc7b3405cb0fb154aa3e231:790692150,be00d0ee5387b3404816c01e9e535f83:303460593,45df84ae1987b3408a67562056cb23d7:-1807298998,baed48aeb087b340ec16b5c76769e266:-47706318,4d3cc06e1b87b340ec2ae0213a42890e:550390457,f97bc06e1987b340ab28ffc00fdf4aea:-1126447267,112b006e8587b340823765d71025521c:1773591673,16dac82e1287b3405a15391e46c13fb9:-1166036315,677ac42e8287b34080c54cde4e0e016f:-1526399341</update_guid_history>
+<update_set display_value=""/>
+<view/>
+</sys_update_xml>
+<sys_update_xml action="INSERT_OR_UPDATE">
+<action>INSERT_OR_UPDATE</action>
+<application display_value="Global">global</application>
+<category>customer</category>
+<comments/>
+<name>sys_properties_99389efbdb9640108cab17803996194e</name>
+<payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_properties"><sys_properties action="INSERT_OR_UPDATE"><choices/><description/><ignore_cache>false</ignore_cache><is_private>false</is_private><name>newsapi.api.key</name><read_roles/><suffix/><sys_class_name>sys_properties</sys_class_name><sys_created_by>admin</sys_created_by><sys_created_on>2020-01-19 10:02:23</sys_created_on><sys_id>99389efbdb9640108cab17803996194e</sys_id><sys_mod_count>0</sys_mod_count><sys_name>newsapi.api.key</sys_name><sys_package display_value="Global" source="global">global</sys_package><sys_policy/><sys_scope display_value="Global">global</sys_scope><sys_update_name>sys_properties_99389efbdb9640108cab17803996194e</sys_update_name><sys_updated_by>admin</sys_updated_by><sys_updated_on>2020-01-19 10:02:23</sys_updated_on><type>string</type><value>594aa44eef3e4f87aea665146043f14e</value><write_roles/></sys_properties><sys_translated_text action="delete_multiple" query="documentkey=99389efbdb9640108cab17803996194e"/></record_update>]]></payload>
+<payload_hash>1651221549</payload_hash>
+<remote_update_set display_value="News Widget">64f29ab8db030010f79c14613996199d</remote_update_set>
+<replace_on_upgrade>false</replace_on_upgrade>
+<sys_created_by>admin</sys_created_by>
+<sys_created_on>2020-02-16 08:44:16</sys_created_on>
+<sys_id>a4f29ab8db030010f79c14613996199e</sys_id>
+<sys_mod_count>0</sys_mod_count>
+<sys_recorded_at>16fbd40e7760000001</sys_recorded_at>
+<sys_updated_by>admin</sys_updated_by>
+<sys_updated_on>2020-02-16 08:44:16</sys_updated_on>
+<table/>
+<target_name>newsapi.api.key</target_name>
+<type>System Property</type>
+<update_domain>global</update_domain>
+<update_guid>8058dafb3e964010fb0522b54e5ce49a</update_guid>
+<update_guid_history>8058dafb3e964010fb0522b54e5ce49a:1651221549</update_guid_history>
+<update_set display_value=""/>
+<view/>
+</sys_update_xml>
+<sys_update_xml action="INSERT_OR_UPDATE">
+<action>INSERT_OR_UPDATE</action>
+<application display_value="Global">global</application>
+<category>customer</category>
+<comments/>
+<name>sp_instance_cd756188db1bf3003d13d6aa4896198b</name>
+<payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sp_instance"&gt;&lt;sp_instance action="INSERT_OR_UPDATE"&gt;&lt;active&gt;true&lt;/active&gt;&lt;class_name/&gt;&lt;color&gt;default&lt;/color&gt;&lt;css/&gt;&lt;glyph&gt;newspaper-o&lt;/glyph&gt;&lt;id/&gt;&lt;order&gt;1&lt;/order&gt;&lt;roles/&gt;&lt;short_description/&gt;&lt;size&gt;md&lt;/size&gt;&lt;sp_column display_value="3"&gt;cbeb7f6edb0333003d13d6aa48961942&lt;/sp_column&gt;&lt;sp_widget display_value="Breaking News"&gt;69985d0cdbd7f3003d13d6aa489619a4&lt;/sp_widget&gt;&lt;sys_class_name&gt;sp_instance&lt;/sys_class_name&gt;&lt;sys_created_by&gt;miika&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2019-08-11 11:34:37&lt;/sys_created_on&gt;&lt;sys_id&gt;cd756188db1bf3003d13d6aa4896198b&lt;/sys_id&gt;&lt;sys_mod_count&gt;2&lt;/sys_mod_count&gt;&lt;sys_name/&gt;&lt;sys_package display_value="Global" source="global"&gt;global&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_scope display_value="Global"&gt;global&lt;/sys_scope&gt;&lt;sys_update_name&gt;sp_instance_cd756188db1bf3003d13d6aa4896198b&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;admin&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2020-01-19 09:25:23&lt;/sys_updated_on&gt;&lt;title/&gt;&lt;url/&gt;&lt;widget_parameters&gt;&lt;![CDATA[{
+	"news_sources": {
+		"value": "abc-news",
+		"displayValue": "abc-news"
+	}
+}]]&gt;&lt;/widget_parameters&gt;&lt;/sp_instance&gt;&lt;sys_translated_text action="delete_multiple" query="documentkey=cd756188db1bf3003d13d6aa4896198b"/&gt;&lt;/record_update&gt;</payload>
+<payload_hash>146498209</payload_hash>
+<remote_update_set display_value="News Widget">64f29ab8db030010f79c14613996199d</remote_update_set>
+<replace_on_upgrade>false</replace_on_upgrade>
+<sys_created_by>admin</sys_created_by>
+<sys_created_on>2020-02-16 08:44:16</sys_created_on>
+<sys_id>a8f29ab8db030010f79c14613996199d</sys_id>
+<sys_mod_count>0</sys_mod_count>
+<sys_recorded_at>16fbd1f02350000001</sys_recorded_at>
+<sys_updated_by>admin</sys_updated_by>
+<sys_updated_on>2020-02-16 08:44:16</sys_updated_on>
+<table/>
+<target_name/>
+<type>Instance</type>
+<update_domain>global</update_domain>
+<update_guid>fddf46f3e59640104af43e4dc2432a65</update_guid>
+<update_guid_history>fddf46f3e59640104af43e4dc2432a65:146498209,70675725985bf700c63edd2507869593:-817767774,c17561882e1bf30084ff02d69cbbdc8d:827772431</update_guid_history>
+<update_set display_value=""/>
+<view/>
+</sys_update_xml>
+<sys_update_xml action="INSERT_OR_UPDATE">
+<action>INSERT_OR_UPDATE</action>
+<application display_value="Global">global</application>
+<category>customer</category>
+<comments/>
+<name>sp_widget_69985d0cdbd7f3003d13d6aa489619a4</name>
+<payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sp_widget"&gt;&lt;sp_widget action="INSERT_OR_UPDATE"&gt;&lt;category&gt;custom&lt;/category&gt;&lt;client_script&gt;&lt;![CDATA[function($scope, spUtil) {
+  /* widget controller */
+  var c = this;
+	
+	c.getNewsSource = function() {
+		c.server.update();
+	}
+
+}]]&gt;&lt;/client_script&gt;&lt;controller_as&gt;c&lt;/controller_as&gt;&lt;css/&gt;&lt;data_table&gt;sp_instance&lt;/data_table&gt;&lt;demo_data/&gt;&lt;description/&gt;&lt;docs/&gt;&lt;field_list/&gt;&lt;has_preview&gt;true&lt;/has_preview&gt;&lt;id&gt;breaking_news&lt;/id&gt;&lt;internal&gt;false&lt;/internal&gt;&lt;link&gt;&lt;![CDATA[function link(scope, element, attrs, controller) {  }]]&gt;&lt;/link&gt;&lt;name&gt;Breaking News&lt;/name&gt;&lt;option_schema&gt;[{"name":"news_sources","section":"Data","default_value":"abc-news","label":"News Sources","type":"choice","choices":[{"label":"abc-news","value":"abc-news"},{"label":"abc-news-au","value":"abc-news-au"},{"label":"aftenposten","value":"aftenposten"},{"label":"al-jazeera-english","value":"al-jazeera-english"},{"label":"ansa","value":"ansa"},{"label":"argaam","value":"argaam"},{"label":"ars-technica","value":"ars-technica"},{"label":"ary-news","value":"ary-news"},{"label":"associated-press","value":"associated-press"},{"label":"australian-financial-review","value":"australian-financial-review"},{"label":"axios","value":"axios"},{"label":"bbc-news","value":"bbc-news"},{"label":"bbc-sport","value":"bbc-sport"},{"label":"bild","value":"bild"},{"label":"blasting-news-br","value":"blasting-news-br"},{"label":"bleacher-report","value":"bleacher-report"},{"label":"bloomberg","value":"bloomberg"},{"label":"breitbart-news","value":"breitbart-news"},{"label":"business-insider","value":"business-insider"},{"label":"business-insider-uk","value":"business-insider-uk"},{"label":"buzzfeed","value":"buzzfeed"},{"label":"cbc-news","value":"cbc-news"},{"label":"cbs-news","value":"cbs-news"},{"label":"cnbc","value":"cnbc"},{"label":"cnn","value":"cnn"},{"label":"cnn-es","value":"cnn-es"},{"label":"crypto-coins-news","value":"crypto-coins-news"},{"label":"der-tagesspiegel","value":"der-tagesspiegel"},{"label":"die-zeit","value":"die-zeit"},{"label":"el-mundo","value":"el-mundo"},{"label":"engadget","value":"engadget"},{"label":"entertainment-weekly","value":"entertainment-weekly"},{"label":"espn","value":"espn"},{"label":"espn-cric-info","value":"espn-cric-info"},{"label":"financial-post","value":"financial-post"},{"label":"focus","value":"focus"},{"label":"football-italia","value":"football-italia"},{"label":"fortune","value":"fortune"},{"label":"four-four-two","value":"four-four-two"},{"label":"fox-news","value":"fox-news"},{"label":"fox-sports","value":"fox-sports"},{"label":"globo","value":"globo"},{"label":"google-news","value":"google-news"},{"label":"google-news-ar","value":"google-news-ar"},{"label":"google-news-au","value":"google-news-au"},{"label":"google-news-br","value":"google-news-br"},{"label":"google-news-ca","value":"google-news-ca"},{"label":"google-news-fr","value":"google-news-fr"},{"label":"google-news-in","value":"google-news-in"},{"label":"google-news-is","value":"google-news-is"},{"label":"google-news-it","value":"google-news-it"},{"label":"google-news-ru","value":"google-news-ru"},{"label":"google-news-sa","value":"google-news-sa"},{"label":"google-news-uk","value":"google-news-uk"},{"label":"goteborgs-posten","value":"goteborgs-posten"},{"label":"gruenderszene","value":"gruenderszene"},{"label":"hacker-news","value":"hacker-news"},{"label":"handelsblatt","value":"handelsblatt"},{"label":"ign","value":"ign"},{"label":"il-sole-24-ore","value":"il-sole-24-ore"},{"label":"independent","value":"independent"},{"label":"infobae","value":"infobae"},{"label":"info-money","value":"info-money"},{"label":"la-gaceta","value":"la-gaceta"},{"label":"la-nacion","value":"la-nacion"},{"label":"la-repubblica","value":"la-repubblica"},{"label":"le-monde","value":"le-monde"},{"label":"lenta","value":"lenta"},{"label":"lequipe","value":"lequipe"},{"label":"les-echos","value":"les-echos"},{"label":"liberation","value":"liberation"},{"label":"marca","value":"marca"},{"label":"mashable","value":"mashable"},{"label":"medical-news-today","value":"medical-news-today"},{"label":"msnbc","value":"msnbc"},{"label":"mtv-news","value":"mtv-news"},{"label":"mtv-news-uk","value":"mtv-news-uk"},{"label":"national-geographic","value":"national-geographic"},{"label":"national-review","value":"national-review"},{"label":"nbc-news","value":"nbc-news"},{"label":"news24","value":"news24"},{"label":"new-scientist","value":"new-scientist"},{"label":"news-com-au","value":"news-com-au"},{"label":"newsweek","value":"newsweek"},{"label":"new-york-magazine","value":"new-york-magazine"},{"label":"next-big-future","value":"next-big-future"},{"label":"nfl-news","value":"nfl-news"},{"label":"nhl-news","value":"nhl-news"},{"label":"nrk","value":"nrk"},{"label":"politico","value":"politico"},{"label":"polygon","value":"polygon"},{"label":"rbc","value":"rbc"},{"label":"recode","value":"recode"},{"label":"reddit-r-all","value":"reddit-r-all"},{"label":"reuters","value":"reuters"},{"label":"rt","value":"rt"},{"label":"rte","value":"rte"},{"label":"rtl-nieuws","value":"rtl-nieuws"},{"label":"sabq","value":"sabq"},{"label":"spiegel-online","value":"spiegel-online"},{"label":"svenska-dagbladet","value":"svenska-dagbladet"},{"label":"t3n","value":"t3n"},{"label":"talksport","value":"talksport"},{"label":"techcrunch","value":"techcrunch"},{"label":"techcrunch-cn","value":"techcrunch-cn"},{"label":"techradar","value":"techradar"},{"label":"the-american-conservative","value":"the-american-conservative"},{"label":"the-globe-and-mail","value":"the-globe-and-mail"},{"label":"the-hill","value":"the-hill"},{"label":"the-hindu","value":"the-hindu"},{"label":"the-huffington-post","value":"the-huffington-post"},{"label":"the-irish-times","value":"the-irish-times"},{"label":"the-jerusalem-post","value":"the-jerusalem-post"},{"label":"the-lad-bible","value":"the-lad-bible"},{"label":"the-next-web","value":"the-next-web"},{"label":"the-sport-bible","value":"the-sport-bible"},{"label":"the-times-of-india","value":"the-times-of-india"},{"label":"the-verge","value":"the-verge"},{"label":"the-wall-street-journal","value":"the-wall-street-journal"},{"label":"the-washington-post","value":"the-washington-post"},{"label":"the-washington-times","value":"the-washington-times"},{"label":"time","value":"time"},{"label":"usa-today","value":"usa-today"},{"label":"vice-news","value":"vice-news"},{"label":"wired","value":"wired"},{"label":"wired-de","value":"wired-de"},{"label":"wirtschafts-woche","value":"wirtschafts-woche"},{"label":"xinhua-net","value":"xinhua-net"},{"label":"ynet","value":"ynet"}]}]&lt;/option_schema&gt;&lt;public&gt;false&lt;/public&gt;&lt;roles/&gt;&lt;script&gt;&lt;![CDATA[(function() {
+
+// if user input is not provided, select source as configured in options
+if(!input) {
+data.news_source = options.news_sources;
+ } else {
+	data.news_source = input.news_source;
+ }
+// Getting a list of all sources
+data.sources = getSources();	
+
+// Get news for a selected source	
+var source = data.news_source;
+var news = getNews(source, 10);
+data.articles = news; 
+
+function getSources() {
+	try { 
+ var r = new sn_ws.RESTMessageV2();
+ r.setEndpoint('https://newsapi.org/v2/sources');
+ r.setHttpMethod('get');
+ r.setQueryParameter('apiKey', gs.getProperty('newsapi.api.key'));
+ var response = r.execute();
+ var responseBody = response.getBody();
+ var httpStatus = response.getStatusCode();
+	
+var json = JSON.parse(responseBody); 
+
+return json.sources;
+
+}
+catch(ex) {
+ var message = ex.message;
+	console.log(message)
+}
+	
+}
+
+function getNews(source, pagesize) {	
+ try { 
+ var r = new sn_ws.RESTMessageV2();
+ r.setEndpoint('https://newsapi.org/v2/top-headlines');
+ r.setHttpMethod('get');
+ r.setQueryParameter('apiKey', gs.getProperty('newsapi.api.key'));
+ r.setQueryParameter('sources', source)
+ r.setQueryParameter('pageSize', pagesize);
+ var response = r.execute();
+ var responseBody = response.getBody();
+ var httpStatus = response.getStatusCode();
+	
+var json = JSON.parse(responseBody); 
+
+return json.articles;
+
+
+}
+catch(ex) {
+ var message = ex.message;
+	console.log(message);
+}
+	
+}
+})();]]&gt;&lt;/script&gt;&lt;servicenow&gt;false&lt;/servicenow&gt;&lt;sys_class_name&gt;sp_widget&lt;/sys_class_name&gt;&lt;sys_created_by&gt;miika&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2019-08-11 10:38:24&lt;/sys_created_on&gt;&lt;sys_id&gt;69985d0cdbd7f3003d13d6aa489619a4&lt;/sys_id&gt;&lt;sys_mod_count&gt;87&lt;/sys_mod_count&gt;&lt;sys_name&gt;Breaking News&lt;/sys_name&gt;&lt;sys_package display_value="Global" source="global"&gt;global&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_scope display_value="Global"&gt;global&lt;/sys_scope&gt;&lt;sys_update_name&gt;sp_widget_69985d0cdbd7f3003d13d6aa489619a4&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;admin&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2020-01-19 12:49:27&lt;/sys_updated_on&gt;&lt;template&gt;&lt;![CDATA[&lt;div class="panel panel-info b"&gt;
+  
+  &lt;select type="text" class="form-control" id="news-source" ng-change="c.getNewsSource()" ng-model="c.data.news_source"&gt;
+   &lt;option ng-repeat="s in data.sources" value="{{:: s.id }}"&gt;{{:: s.name }}&lt;/option&gt; 
+  &lt;/select&gt;
+  &lt;div class="panel-heading"&gt;
+    &lt;h4 class="panel-title"&gt;Latest News from {{ c.data.articles[0].source.name }}&lt;/h4&gt;
+  &lt;/div&gt;
+
+  &lt;div class="panel-body"&gt;
+    &lt;div ng-repeat="a in data.articles" style="margin-bottom: 1em;"&gt;
+      &lt;a target="_blank" href="{{::a.url}}"&gt;{{::a.title}}&lt;/a&gt;
+      &lt;div&gt;
+        &lt;span title="Published"&gt;
+          &lt;glyph sn-char="calendar" /&gt;
+          &lt;sn-time-ago timestamp="a.publishedAt"/&gt;
+        &lt;/span&gt;
+      &lt;/div&gt;
+      
+    &lt;/div&gt;
+   
+  &lt;/div&gt;
+&lt;/div&gt;]]&gt;&lt;/template&gt;&lt;/sp_widget&gt;&lt;/record_update&gt;</payload>
+<payload_hash>2105400297</payload_hash>
+<remote_update_set display_value="News Widget">64f29ab8db030010f79c14613996199d</remote_update_set>
+<replace_on_upgrade>false</replace_on_upgrade>
+<sys_created_by>admin</sys_created_by>
+<sys_created_on>2020-02-16 08:44:16</sys_created_on>
+<sys_id>e0f29ab8db030010f79c14613996199e</sys_id>
+<sys_mod_count>0</sys_mod_count>
+<sys_recorded_at>16fbdd9d6710000001</sys_recorded_at>
+<sys_updated_by>admin</sys_updated_by>
+<sys_updated_on>2020-02-16 08:44:16</sys_updated_on>
+<table/>
+<target_name>Breaking News</target_name>
+<type>Widget</type>
+<update_domain>global</update_domain>
+<update_guid>878e7e33d25a40106053fd1ff3ff93d2</update_guid>
+<update_guid_history>878e7e33d25a40106053fd1ff3ff93d2:2105400297,299d76fb721a401058d8111e1bfcb1f4:1904949445,c05dbaffb51a401051c845af2ad85164:326283957,e70db6ff241a4010543bd7131998b872:-433590384,aaccb2ffbf1a4010689c7361cda31506:-1331939802,b0fb76bfd41a4010fb789a148a5ebc4f:276099446,20ab32bfe11a401048d134268c8fa61d:895597274,f66b3e7fec1a4010ea724b129ff21dcd:1043473801,e49afafb0f1a401019b5c79cfb157541:1585773677,b58a7afbe41a4010d7653ac6d3413975:1245171362,d67aba3fcd1a4010e459083a6b055bb3:327342530,c83a7abb371a4010adbb740fc1506186:-2130414724,d229fafbca1a401086129da8ec7a673a:1465274148,9f097afbcc1a4010811193efbb4a9862:867027221,aef83ebb721a4010a74026f40a22b3d5:2033428382,16d8babb481a401009c44ae536acb0a0:1648333248,cbb87abb4b1a4010936f0f9050d325a9:2033428382,ce98fa37e41a401089235dbf2ab0ec2a:46642774,7268febb671a401002c52fa50f5dbc07:-598178032,dd483ebb611a4010bf486beab2e5aaca:-257504391,c718babb911a4010ddcbcb9a41bd7923:-1947269808,4308f6bb241a40101b0b5d55c536d223:-1465258172,cbe7767bb21a401086a74603e7f8bf28:-758185692,41e7f27b511a401092fe08494ef66af6:-411521942,da97b2bb971a40106ce0f9d868c2e45c:854555994,9367fe7be01a40105cdd299103fb7a3e:1798995383,04f63a7b2b1a40100e09b0a77096867e:-1554401480,eaa6fef74d1a40105ccc8e7a2ee692be:-1290907658,a7963e3b7cd64010be0ecc2ef1e95f86:-142834509,bff6e2bbdbd64010debc90ff367b4161:-1882783290,68d622bb70d6401031655639125bc08f:-47458341,8fb6a63b5ad64010dfb822efeb32191b:953388792,28852e3b95d64010b00efbb2f0ee9f74:1450071575,3765e6b322d64010c5b09c47f2d6779d:1064907828,84452a3b59d640102013667af879050a:-489581412,8025aeb775d64010d08586e94a8be735:-1224493309,2283a233e3d640108d2e163d7eb75ff4:933633113,f8ffd6f3b2d640106e2e411466be6986:2035484468,c5de16b33ad64010244381fef4590066:-49015071,2fae92b351d6401076198a302a8ebcd4:-2142275914,8cedd233c1d64010042667e0c76da32c:894937083,cecd12338bd6401040afe3182526f1d6:-983927268,124d9ebf8d964010c23e13b9967ea616:516411352,393dda3344d64010804627dac5db48cc:-388660553,d9ac1ebfaf9640101b25901aff041b7d:-714483542,848cdefb7a96401061e46136705655d8:-632267561,0c4b5ebfc5964010f6f6c17b0e35c8d2:-898287402,422b1ebf8f9640106bf1221716369d3d:-1444719580,69f7d2fbea96401065429c25bbb54be3:1455127661,6105d63b30964010e7e588fd746bdf96:-675567818,e0c41ab705964010906e47570c662664:1661093864,8aa4d63b19964010cc125ff9dcb3c38e:-53963143,7033da77a49640106aa8c0d8b7c1099c:-661821461,b2131ef3c79640109515e7c0fd67686c:-1758913281,e4f29af3809640101f22ab475a0a1e5e:-937127604,f0d25ab74c964010ccb5569e4b69e741:-1758913281,c5b2d2f358964010634318530a2868fa:1065289884,49a2da77249640101e3c54efb6dc00aa:1031626153,ed82d2f3ea964010bf12940efa9b3cf4:-1758913281,2dd1da7763964010a9a1442c75eb0c96:-661821461,b07116fb0e564010dc85d74a06279ee1:1251408341,6c311ef3959640101e793acfc5255917:1451035886,0d805af3b19640109c7264bd0a5d5afe:-276725222,3c105af3669640106dcd074c57bce30b:1604628807,648f823f7a564010839e6585045b4791:-616320291,611982fb0e5640105bcbc81599831bac:-907924181,5ed7cef7b75640104da9e1960d509eb9:1266042342,90c7c27b8a564010c51087d4aab9e741:1184564940,b577427b365640107d774acc64a95ce4:-104525633,2c170ef7b9564010d35ebf1139a62d1f:1075050823,fff68eb7c7564010e0f162fd955406f9:440326221,5a960ef7f756401095fc4985eaee4691:893416550,320ade9ad1fb73001726d0eb2aaa48fc:2104330188,85cdca1a3efb730079ea378a54fff3e8:1105217333,ffad0ed615fb73009574cfa15c08aac1:911629239,e72c0ed641fb730076b7921b58e95ab9:1072782354,02ebce1247fb7300b107ce29caf63171:1144246033,ecaae6655ad7f700cb6be600a8a37fa9:-1688057905,ad0e526d5697f700b17b606beb770e8b:-2116591992,5279de19eb1fb700fc66482e3e17424f:-585537007,623f36cc92dbf3001bc48ebf51a3f7fc:738886226,33eaf2cc2edbf3007553bd84c3a838f0:794262699,9c54a148a51bf30055a085e735cca835:480546542,5a04ad00dd1bf3005a0bd81ec72851b7:-521952964,0bd2a900ba1bf30048772405f8e690b2:2093006963,d7402940ea1bf3004c4414612cda5a6d:-1780712915,709f5dcc8ad7f300146a35e818f788b7:967764853,21985d0cd1d7f300f793a62be55d85a6:-1489820478</update_guid_history>
+<update_set display_value=""/>
+<view/>
+</sys_update_xml>
+</unload>
